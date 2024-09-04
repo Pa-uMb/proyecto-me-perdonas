@@ -1,1 +1,195 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¿Me perdonas?</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 100px;
+            transition: background-color 0.5s;
+        }
+
+        h1 {
+            margin-bottom: 50px;
+        }
+
+        .button-container {
+            position: relative;
+            width: 100%;
+        }
+
+        #no, #yes {
+            position: absolute;
+            padding: 10px 20px;
+            background-color: green;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: transform 0.3s, background-color 0.3s;
+        }
+
+        #no:hover, #yes:hover {
+            transform: scale(1.1);
+            background-color: yellow;
+        }
+
+        #no {
+            left: 10%; /* Botón "NO" a la izquierda */
+        }
+
+        #yes {
+            right: 10%; /* Botón "SI" a la derecha */
+        }
+
+        /* Estilo para el mensaje de "Yo también te amo" */
+        #love-message {
+            font-size: 60px;
+            color: pink;
+            display: none;
+            margin-top: 50px;
+        }
+
+        /* Estilo para la respuesta cuando hacen clic en "NO" */
+        #no-response {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        #no-text {
+            font-size: 30px;
+            margin-bottom: 20px;
+        }
+
+        #no-image {
+            width: 200px;
+            height: auto;
+        }
+
+        /* Animación para los emojis flotantes */
+        .emoji {
+            position: absolute;
+            font-size: 30px;
+            animation: floatUp 3s ease-out forwards;
+        }
+
+        @keyframes floatUp {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateY(-200px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1 id="perdon-text">¿Me perdonas?</h1>
+    <div class="button-container">
+        <button id="no" class="si">NO</button>
+        <button id="yes" class="si">SI</button>
+    </div>
+
+    <div id="love-message">Yo también te amo 💖💖💖</div>
+
+    <!-- Contenedor de la imagen y el texto al hacer clic en "NO" -->
+    <div id="no-response">
+        <p id="no-text">¿Como que no? 🤨</p>
+        <!-- Imagen insertada con el vínculo proporcionado -->
+        <img id="no-image" src="https://th.bing.com/th/id/OIP.dYXHBzYA8C0dLSvyBNpz5wHaFj?rs=1&pid=ImgDetMain" alt="Imagen de sorpresa">
+    </div>
+
+    <!-- Incluimos la librería Confetti.js -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        const noBtn = document.getElementById('no');
+        const yesBtn = document.getElementById('yes');
+        const loveMessage = document.getElementById('love-message');
+        const perdonText = document.getElementById('perdon-text');
+        const noResponse = document.getElementById('no-response');
+        let moveCount = 0;
+        let maxMoves = 10;
+        let screenFilled = false;
+
+        // Mover el botón "NO" hasta que se haya movido 10 veces
+        noBtn.addEventListener('mouseover', () => {
+            if (!screenFilled && moveCount < maxMoves) {
+                const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
+                const y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
+                noBtn.style.left = `${x}px`;
+                noBtn.style.top = `${y}px`;
+                moveCount++;
+            }
+        });
+
+        // Crear muchos botones de "SI" para llenar la pantalla después de 10 movimientos
+        noBtn.addEventListener('click', () => {
+            if (!screenFilled && moveCount >= maxMoves) {
+                screenFilled = true;
+
+                // Mostrar la imagen y el texto "¿Como que no? 🤨"
+                noResponse.style.display = 'block';
+
+                // Ocultar los botones y el texto
+                yesBtn.style.display = 'none';
+                noBtn.style.display = 'none';
+                perdonText.style.display = 'none';
+
+                // Volver al estado original después de 10 segundos
+                setTimeout(() => {
+                    noResponse.style.display = 'none';
+                    yesBtn.style.display = 'block';
+                    noBtn.style.display = 'block';
+                    perdonText.style.display = 'block';
+                    screenFilled = false;
+                    moveCount = 0; // Reiniciar el contador de movimientos
+                }, 10000); // 10 segundos
+            }
+        });
+
+        // Cuando se hace clic en el botón "SI", no reiniciar y continuar con el mensaje "Yo también te amo" indefinidamente
+        yesBtn.addEventListener('click', () => {
+            loveMessage.style.display = 'block'; // Mostrar el mensaje
+            yesBtn.style.display = 'none'; // Ocultar el botón "SI"
+            perdonText.style.display = 'none'; // Ocultar el texto "¿Me perdonas?"
+            noBtn.style.display = 'none'; // Ocultar el botón "NO"
+
+            // Cambiar los colores de fondo de forma indefinida
+            setInterval(() => {
+                const randomColor = `hsl(${Math.random() * 360}, 100%, 80%)`;
+                document.body.style.backgroundColor = randomColor;
+            }, 500); // Cambia de color cada medio segundo
+
+            // Efecto de confeti
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 }
+            });
+
+            // Crear emojis flotantes indefinidamente
+            setInterval(() => {
+                for (let i = 0; i < 20; i++) {
+                    const emoji = document.createElement('div');
+                    emoji.classList.add('emoji');
+                    emoji.innerText = '💖';
+                    emoji.style.left = `${Math.random() * window.innerWidth}px`;
+                    emoji.style.top = `${Math.random() * window.innerHeight}px`;
+                    document.body.appendChild(emoji);
+
+                    // Elimina el emoji después de que sube
+                    setTimeout(() => emoji.remove(), 3000);
+                }
+            }, 1000); // Cada segundo se crean más emojis
+        });
+    </script>
+</body>
+</html>
 
